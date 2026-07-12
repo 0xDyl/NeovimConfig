@@ -1,8 +1,3 @@
-local function change_theme(theme)
-  vim.cmd('colorscheme ' .. theme)
-  print('Current theme: ' .. theme)
-end
-
 local themes_git = {
   'https://github.com/savq/melange-nvim.git',
   'https://github.com/folke/tokyonight.nvim.git',
@@ -20,6 +15,21 @@ local themes = {
   'kanagawa',
   'catppuccin-mocha',
 }
+
+-- Check if a theme is stored in the text file and set if so.
+local filepath = vim.fn.expand '~/.config/nvim/lua/custom/plugins/currenttheme.txt'
+
+if vim.fn.filereadable(filepath) then
+  for line in io.lines(filepath) do
+    vim.cmd('colorscheme ' .. line)
+  end
+end
+
+local function change_theme(theme)
+  vim.cmd('colorscheme ' .. theme)
+  local file = io.open(filepath, 'w')
+  if file then file:write(theme) end
+end
 
 local function create_floating_window()
   local buf = vim.api.nvim_create_buf(true, false)
@@ -59,7 +69,7 @@ local function create_floating_window()
 end
 
 -- Will set default every startup
-local default = 'melange'
+local default = 'kanagawa'
 vim.cmd('colorscheme ' .. default)
 
 vim.keymap.set('n', '<leader>ct', function()

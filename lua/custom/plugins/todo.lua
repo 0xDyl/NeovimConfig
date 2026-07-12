@@ -1,3 +1,4 @@
+-- Possibly add a daily todo instead, so compares edit time to see if a day has passed and then resets all check to incomplete.
 local function create_floating_window()
   local buf = vim.api.nvim_create_buf(true, false)
   vim.api.nvim_buf_set_name(buf, 'Todo')
@@ -21,10 +22,13 @@ local function create_floating_window()
     border = 'rounded',
   }
 
-  -- Sets the close window keybind
-  vim.keymap.set('n', 'q', function() vim.api.nvim_buf_delete(buf, { force = true }) end)
-
   local win = vim.api.nvim_open_win(buf, true, win_opts)
+
+  -- Sets the close window keybind
+  vim.keymap.set('n', 'q', function()
+    vim.api.nvim_win_close(win, true)
+    vim.api.nvim_buf_delete(buf, { force = true })
+  end)
 
   return buf, win
 end
@@ -33,7 +37,6 @@ local filepath = vim.fn.expand '~/.config/helper-files/todo.txt'
 
 vim.keymap.set('n', '<leader>td', function()
   local buf, win = create_floating_window()
-  local file = io.open(filepath, 'r')
 
   -- Read file
   local lines = {}
