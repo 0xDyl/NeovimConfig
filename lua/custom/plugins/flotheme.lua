@@ -16,20 +16,10 @@ local themes = {
   'catppuccin-mocha',
 }
 
--- Check if a theme is stored in the text file and set if so.
-local filepath = vim.fn.expand '~/.config/nvim/lua/custom/plugins/currenttheme.txt'
+-- Current colorscheme -> Possibly set this up in a file to make it persistent with UI changes (Started below line 61.)
+vim.cmd 'colorscheme kanagawa'
 
-if vim.fn.filereadable(filepath) then
-  for line in io.lines(filepath) do
-    vim.cmd('colorscheme ' .. line)
-  end
-end
-
-local function change_theme(theme)
-  vim.cmd('colorscheme ' .. theme)
-  local file = io.open(filepath, 'w')
-  if file then file:write(theme) end
-end
+local function change_theme(theme) vim.cmd('colorscheme ' .. theme) end
 
 local function create_floating_window()
   local buf = vim.api.nvim_create_buf(true, false)
@@ -69,8 +59,12 @@ local function create_floating_window()
 end
 
 -- Will set default every startup
-local default = 'kanagawa'
-vim.cmd('colorscheme ' .. default)
+-- local filepath = '~/.config/nvim/lua/custom/plugins/currenttheme.txt'
+-- local file = io.open(filepath, 'r')
+-- if file then
+--   local theme = file:read '*l'
+--   vim.cmd('colorscheme ' .. theme)
+-- end
 
 vim.keymap.set('n', '<leader>ct', function()
   local buf, win = create_floating_window()

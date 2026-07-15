@@ -1,11 +1,19 @@
 local pers = {
   win = -1,
   buf = -1,
+  termActive = 0,
 }
 
 local function create_floating_window()
-  local buf = vim.api.nvim_create_buf(true, false)
-  vim.api.nvim_buf_set_name(buf, 'Terminal')
+  local buf
+  if pers.buf ~= -1 then
+    buf = pers.buf
+  else
+    buf = vim.api.nvim_create_buf(true, false)
+    vim.api.nvim_buf_set_name(buf, 'Terminal')
+    pers.buf = buf
+    vim.api.nvim_set_option_value('bufhidden', 'hide', { buf = buf })
+  end
 
   local screen_width = vim.o.columns
   local screen_height = vim.o.lines
@@ -28,32 +36,21 @@ local function create_floating_window()
 
   local win = vim.api.nvim_open_win(buf, true, win_opts)
 
-  -- "wipe" means just delete the buffer when it is hidden off screen
-  vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = buf })
-
   -- Sets the close window keybind
-  vim.keymap.set('n', 'q', function()
-    vim.api.nvim_win_close(win, true)
-    -- vim.api.nvim_buf_delete(buf, { force = true }) -- Was using before the above "wipe"
-  end)
+  vim.keymap.set('n', 'q', function() vim.api.nvim_win_close(win, true) end)
 
-  vim.cmd 'terminal'
+  if pers.termActive == 0 then
+    vim.cmd 'terminal'
+    pers.termActive = 0
+  end
 
   return buf, win
 end
 
 -- Needs some work to get working, mainly around reopening the previous buffer.
 vim.keymap.set('n', '<leader>st', function()
-  if pers.buf ~= -1 then
-    local buf, win = create_floating_window()
-  else
-    print 'Showing active terminal'
-  end
+  pers.buf, pers.win = create_floating_window()
 
-  pers.buf = buf
-  pers.win = win
-
-  vim.api.nvim_create_user_command('DelTermBuf', function() vim.api.nvim_buf_delete(buf, {}) end, { desc = 'Deletes the current terminal buffer' })
-
+  -- Allows you to escape terminal mode
   vim.keymap.set('t', '<Esc><Esc>', [[<C-\><C-n>]], { buf = buf })
 end, {})
