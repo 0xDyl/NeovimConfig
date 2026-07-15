@@ -90,7 +90,7 @@ do
   -- [[ Basic Keymaps ]]
   --  See `:help vim.keymap.set()
   -- <Esc> Alternative
-  vim.keymap.set('i', 'jj', '<Esc>', {})
+  vim.keymap.set('i', 'jk', '<Esc>', {})
 
   -- Clear highlights on search when pressing <Esc> in normal mode
   --  See `:help hlsearch`
@@ -893,6 +893,7 @@ do
   -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   require 'custom.plugins'
+  require 'custom.personal'
 end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
