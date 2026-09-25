@@ -28,7 +28,9 @@ add_executable(%s main.cpp)
   if vim.fn.isdirectory 'build' == 0 then vim.cmd '!cmake -B build -S .' end
   vim.cmd '!cmake --build build'
 
-  local exe = './build/' .. folderName
+  -- local exe = './build/' .. folderName
+  local current_file = vim.fn.expand '%:t:r'
+  local exe = './build/bin' .. current_file
 
   if vim.fn.executable(exe) == 1 then vim.cmd('vertical rightbelow 40split | terminal ' .. exe) end
 
